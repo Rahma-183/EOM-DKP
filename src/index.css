@@ -614,7 +614,7 @@ html, body, #root {
   display: grid;
   grid-template-columns: 1fr 1fr 1fr;
   gap: 1.5rem;
-  align-items: end;
+  align-items: stretch;
   max-width: 1000px;
   margin: 0 auto;
 }
@@ -672,13 +672,12 @@ html, body, #root {
   transition: var(--transition);
   display: flex;
   flex-direction: column;
+  height: 100%;
 }
 
 .podium-rank-1 .cand-card {
   border-color: var(--gold);
   background: linear-gradient(180deg, rgba(245, 158, 11, 0.05) 0%, var(--panel) 40%);
-  transform: translateY(-15px);
-  padding: 1.5rem;
 }
 
 .podium-rank-2 .cand-card {
@@ -692,9 +691,6 @@ html, body, #root {
 .cand-card:hover {
   transform: translateY(-3px);
   box-shadow: var(--shadow);
-}
-.podium-rank-1 .cand-card:hover {
-  transform: translateY(-18px);
 }
 
 .rank-badge {
@@ -720,10 +716,6 @@ html, body, #root {
   margin-top: 0.5rem;
   margin-bottom: 0.2rem;
   color: var(--text);
-}
-
-.podium-rank-1 .card-name {
-  font-size: 1.25rem;
 }
 
 .card-nip {
