@@ -20,17 +20,16 @@ export default function InputDashboard({
     <div className="input-dashboard">
       <div className="dashboard-header">
         <h2>Mulai Analisis Kandidat</h2>
-        <p>Unggah file rekap dan tentukan pengecualian untuk bulan ini.</p>
+        <p>Unggah file rekap usulan dan tentukan daftar pengecualian (Blacklist) untuk bulan ini.</p>
       </div>
 
       <div className="dashboard-grid">
         {/* Upload Section */}
         <div className="dash-card">
           <div className="dash-card-header">
-            <span className="icon">📁</span>
             <h3>File Rekap Usulan</h3>
           </div>
-          <p className="hint">Format .xlsx atau .xls</p>
+          <p className="hint">Format file yang didukung: .xlsx atau .xls</p>
           
           <label
             className={`file-drop-large ${file ? 'has-file' : ''}`}
@@ -46,9 +45,9 @@ export default function InputDashboard({
               }}
             />
             <div className="drop-content">
-              <span className="drop-icon">{file ? '✅' : '📥'}</span>
-              <h4>{file ? 'File Siap' : 'Klik atau Drag & Drop File'}</h4>
-              <p>{file ? file.name : 'Pilih file rekap dari komputer Anda'}</p>
+              <span className="drop-icon">{file ? '✓' : '+'}</span>
+              <h4>{file ? 'File Berhasil Dipilih' : 'Klik atau Drag & Drop File'}</h4>
+              <p>{file ? file.name : 'Pilih file rekap dari perangkat Anda'}</p>
             </div>
           </label>
         </div>
@@ -56,10 +55,9 @@ export default function InputDashboard({
         {/* Blacklist Section */}
         <div className="dash-card">
           <div className="dash-card-header">
-            <span className="icon">🚫</span>
-            <h3>Daftar Blacklist</h3>
+            <h3>Daftar Pengecualian (Blacklist)</h3>
           </div>
-          <p className="hint">Pisahkan nama dengan koma atau baris baru</p>
+          <p className="hint">Pisahkan setiap nama dengan koma atau baris baru.</p>
           
           <textarea
             className="s-textarea large-textarea"
@@ -82,7 +80,7 @@ export default function InputDashboard({
               <span>Memproses Data...</span>
             </>
           ) : (
-            <>🚀 Mulai Analisis Kandidat</>
+            <span>Mulai Analisis Kandidat</span>
           )}
         </button>
       </div>

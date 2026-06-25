@@ -82,7 +82,7 @@ export const parseExcel = async (file, _unused, blacklistStr) => {
       if (b.kehadiran     !== a.kehadiran)     return b.kehadiran - a.kehadiran;
       return b.skp - a.skp;
     });
-    results[cat] = grouped[cat].slice(0, 3);
+    results[cat] = grouped[cat].slice(0, 6); // Ambil Top 6
   }
 
   return results;

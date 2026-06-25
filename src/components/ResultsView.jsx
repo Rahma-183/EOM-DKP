@@ -10,7 +10,6 @@ export default function ResultsView({ results, onExport, onReset }) {
   const scrollToCategory = (index) => {
     const el = document.getElementById(`category-${index}`);
     if (el) {
-      // Offset for sticky nav
       const yOffset = -100; 
       const y = el.getBoundingClientRect().top + window.pageYOffset + yOffset;
       window.scrollTo({ top: y, behavior: 'smooth' });
@@ -22,7 +21,7 @@ export default function ResultsView({ results, onExport, onReset }) {
       {/* Results Header / Dashboard */}
       <div className="results-dashboard">
         <div className="res-dash-main">
-          <h2>🌟 Hasil Seleksi Kandidat EOM</h2>
+          <h2>Hasil Seleksi Kandidat EOM</h2>
           <div className="res-stats">
             <div className="stat">
               <span className="val">{categories.length}</span>
@@ -31,22 +30,23 @@ export default function ResultsView({ results, onExport, onReset }) {
             <div className="divider"></div>
             <div className="stat">
               <span className="val">{totalCandidates}</span>
-              <span className="lbl">Kandidat</span>
+              <span className="lbl">Kandidat Terpilih</span>
             </div>
           </div>
         </div>
         <div className="res-dash-actions">
           <button className="btn-secondary" onClick={onReset}>
-            🔄 Mulai Ulang
+            Mulai Ulang
           </button>
           <button className="btn-primary" onClick={onExport}>
-            📥 Ekspor ke Excel
+            Ekspor ke Excel
           </button>
         </div>
       </div>
 
       {/* Category Navigation (Pills) */}
       <div className="category-nav">
+        <span className="cat-nav-label">Navigasi:</span>
         {categories.map((cat, i) => (
           <button
             key={`nav-${i}`}
