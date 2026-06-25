@@ -57,11 +57,11 @@ export default function InputDashboard({
           <div className="dash-card-header">
             <h3>Daftar Pengecualian (Blacklist)</h3>
           </div>
-          <p className="hint">Pisahkan setiap nama dengan koma atau baris baru.</p>
+          <p className="hint">Masukkan nama atau NIP pegawai yang dikecualikan (pisahkan dengan koma atau baris baru).</p>
           
           <textarea
             className="s-textarea large-textarea"
-            placeholder={'Contoh:\nBudi Santoso\nSITI AMINAH\nRudi'}
+            placeholder={'Contoh nama:\nBudi Santoso\nSITI AMINAH\n\nContoh NIP:\n197401021999031001'}
             value={blacklistInput}
             onChange={(e) => onBlacklistChange(e.target.value)}
           />

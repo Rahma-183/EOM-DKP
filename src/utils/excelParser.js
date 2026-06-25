@@ -11,7 +11,7 @@ const readAsBuffer = (file) =>
 
 // ─── MAIN PARSER ───
 export const parseExcel = async (file, _unused, blacklistStr) => {
-  // 1. Bangun daftar blacklist — case-insensitive, toleran typo spasi
+  // 1. Bangun daftar blacklist — bisa berupa nama ATAU NIP, case-insensitive
   const blacklist = blacklistStr
     ? blacklistStr.split(/[\n,]+/).map((n) => n.trim().toLowerCase()).filter(Boolean)
     : [];
@@ -35,8 +35,9 @@ export const parseExcel = async (file, _unused, blacklistStr) => {
     const name = nameRaw.trim();
     if (!name) continue;
 
-    // Cek blacklist — case-insensitive
-    if (blacklist.includes(name.toLowerCase())) continue;
+    // Cek blacklist — cocokkan berdasarkan nama ATAU NIP (case-insensitive)
+    const nipStr = row[2] ? String(row[2]).trim().toLowerCase() : '';
+    if (blacklist.includes(name.toLowerCase()) || (nipStr && blacklist.includes(nipStr))) continue;
 
     // Jumlahkan semua kolom penalti (kolom 9–22, 0-based)
     let totalPenalty = 0;
@@ -68,7 +69,7 @@ export const parseExcel = async (file, _unused, blacklistStr) => {
     grouped[item.category].push(item);
   }
 
-  // 5. Sort & ambil Top 3 per kategori
+  // 5. Sort & ambil Top 6 per kategori
   //    Urutan prioritas:
   //      1. Evidence    — DESC (tertinggi)
   //      2. TotalPenalti — ASC  (terendah)

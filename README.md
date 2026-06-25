@@ -1,30 +1,43 @@
-# 🏆 EOM Candidate Selector — DKP Jawa Timur
+# EOM Candidate Selector — DKP Jawa Timur
 
-Aplikasi otomatisasi seleksi **Employee of the Month (EOM)** Dinas Kelautan dan Perikanan Provinsi Jawa Timur.
+Aplikasi web interaktif untuk otomatisasi seleksi **Employee of the Month (EOM)** Dinas Kelautan dan Perikanan Provinsi Jawa Timur.
 
 ## Cara Menjalankan
 
 ### Prasyarat
-Pastikan Python sudah terinstall. Kemudian install dependensi:
+Pastikan **Node.js** (v18 ke atas) sudah terinstall. Kemudian install dependensi:
 
 ```bash
-pip install -r requirements.txt
+npm install
 ```
 
-### Menjalankan Aplikasi
+### Menjalankan Aplikasi (Mode Development)
 ```bash
-streamlit run app.py
+npm run dev
 ```
 
-Aplikasi akan terbuka otomatis di browser pada `http://localhost:8501`.
+Aplikasi akan terbuka di browser pada `http://localhost:5173`.
+
+### Build Production
+```bash
+npm run build
+```
 
 ## Cara Penggunaan
 
-1. **Unggah file Rekap Usulan EOM** (.xlsx) di panel kiri
-2. **Masukkan nama blacklist** (yang dikecualikan bulan ini) — pisahkan dengan koma atau baris baru
+1. **Unggah file Rekap Usulan EOM** (.xlsx) — drag & drop atau klik area unggah
+2. **Masukkan daftar pengecualian (Blacklist)** — bisa menggunakan nama atau NIP, pisahkan dengan koma atau baris baru
 3. Klik **Mulai Analisis Kandidat**
-4. Sistem akan otomatis menampilkan **3 kandidat terbaik per kategori**
-5. Klik **Ekspor ke Excel** untuk mengunduh rekap hasil dalam satu file
+4. Sistem menampilkan **3 kandidat terbaik per kategori** beserta tombol rekomendasi untuk melihat peringkat 4-6
+5. Klik **Ekspor ke Excel** untuk mengunduh rekap hasil
+
+### Ketentuan Blacklist
+Kandidat berikut wajib dimasukkan ke daftar pengecualian:
+- Pegawai dengan status **Pensiun**
+- Pegawai dengan status **CPNS**
+- Pegawai yang sedang **Cuti Penuh**
+- Pegawai dengan catatan **Indisipliner**
+- Pegawai yang **pernah terpilih menjadi EOM** di bulan-bulan sebelumnya pada tahun yang sama
 
 ## Algoritma Seleksi
 
@@ -37,12 +50,26 @@ Kandidat diseleksi menggunakan metode **Multi-Criteria Hierarchical Sorting**:
 | 3 | Kehadiran (hari) | Terbanyak |
 | 4 | Nilai SKP | Tertinggi |
 
+## Catatan Format File Excel
+
+File rekap usulan harus memiliki struktur dengan **4 baris header** di atas, sehingga data pegawai dimulai dari **baris ke-5**. Posisi kolom yang dibaca:
+
+| Kolom | Isi |
+|-------|-----|
+| B | Nama |
+| C | NIP |
+| E | Jabatan |
+| F | Unit Kerja |
+| G | Kategori |
+| I | Kehadiran |
+| J–W | Komponen Penalti |
+| X | Evidence Score |
+| Y | Nilai SKP |
+
+Baris kosong, baris subtotal, atau kolom di luar jangkauan di atas akan diabaikan secara otomatis oleh sistem.
+
 ## Teknologi
 
-- **Python** + **Streamlit** — framework web aplikasi data
-- **Pandas** — pengolahan dan analisis data Excel
-- **XlsxWriter** — ekspor hasil ke format Excel
-
-## Logo
-
-Untuk menampilkan logo instansi, letakkan file `logo.png` atau `logo.jpg` di folder yang sama dengan `app.py`, kemudian refresh halaman.
+- **React 19** + **Vite** — framework web modern
+- **SheetJS (xlsx)** — pemrosesan file Excel di browser (tanpa server)
+- **Plain CSS** — styling dengan variabel desain (Dark Mode)

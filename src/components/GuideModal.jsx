@@ -14,7 +14,7 @@ export default function GuideModal({ isOpen, onClose }) {
             <ol>
               <li>Siapkan file <strong>Rekap Usulan EOM</strong> (.xlsx) bulan ini.</li>
               <li>Unggah file tersebut ke dalam kotak yang disediakan di halaman utama.</li>
-              <li>Masukkan daftar nama yang masuk dalam kriteria <strong>Blacklist</strong> (lihat ketentuan di bawah). Pisahkan nama dengan baris baru atau koma.</li>
+              <li>Masukkan daftar <strong>Nama atau NIP</strong> yang masuk dalam kriteria <strong>Blacklist</strong> (lihat ketentuan di bawah). Pisahkan dengan baris baru atau koma. Menggunakan NIP lebih disarankan untuk menghindari kesalahan pada nama yang sama atau salah ejaan.</li>
               <li>Klik tombol <strong>Mulai Analisis Kandidat</strong>.</li>
               <li>Sistem akan menampilkan 3 kandidat terbaik per kategori, dengan opsi untuk melihat rekomendasi peringkat 4-6.</li>
               <li>Klik <strong>Ekspor ke Excel</strong> untuk mengunduh rekap akhir.</li>
@@ -34,7 +34,7 @@ export default function GuideModal({ isOpen, onClose }) {
               <li><strong>Pernah terpilih</strong> menjadi EOM di bulan-bulan sebelumnya pada tahun yang sama</li>
             </ul>
             <p className="guide-note">
-              <em>Catatan: Penulisan nama pada daftar Blacklist tidak harus sama persis kapitalisasinya (sistem membaca huruf besar/kecil sebagai sama).</em>
+              <em>Catatan: Penulisan nama pada daftar Blacklist tidak harus sama persis kapitalisasinya (sistem membaca huruf besar/kecil sebagai sama). Sebagai alternatif yang lebih akurat, Anda dapat menggunakan NIP untuk mengantisipasi nama yang sama atau salah ejaan.</em>
             </p>
           </div>
         </div>
