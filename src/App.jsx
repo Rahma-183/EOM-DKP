@@ -1,6 +1,6 @@
 import { useState } from 'react';
-import Sidebar from './components/Sidebar';
-import Hero from './components/Hero';
+import TopNav from './components/TopNav';
+import InputDashboard from './components/InputDashboard';
 import ResultsView from './components/ResultsView';
 import { parseExcel, exportToExcel } from './utils/excelParser';
 
@@ -26,36 +26,33 @@ export default function App() {
     }
   };
 
+  const handleReset = () => {
+    setResults(null);
+    setFile(null);
+  };
+
   return (
-    <div className="app-layout">
-      <Sidebar
-        file={file}
-        onFileChange={setFile}
-        blacklistInput={blacklistInput}
-        onBlacklistChange={setBlacklist}
-        onAnalyze={handleAnalyze}
-        isLoading={isLoading}
-      />
+    <div className="app-layout-modern">
+      <TopNav />
 
-      <main className="main-content">
-        {/* Top bar */}
-        <div className="topbar">
-          <span className="topbar-title">
-            Dashboard Seleksi Employee of the Month
-          </span>
-          <span className="topbar-badge">DKP Jawa Timur</span>
-        </div>
-
-        {/* Content */}
+      <main className="main-content-modern">
         <div className="content-area">
           {error && <div className="error-alert">❌ {error}</div>}
 
           {!results ? (
-            <Hero />
+            <InputDashboard 
+              file={file}
+              onFileChange={setFile}
+              blacklistInput={blacklistInput}
+              onBlacklistChange={setBlacklist}
+              onAnalyze={handleAnalyze}
+              isLoading={isLoading}
+            />
           ) : (
             <ResultsView
               results={results}
               onExport={() => exportToExcel(results)}
+              onReset={handleReset}
             />
           )}
         </div>
