@@ -1,65 +1,53 @@
-import React from 'react';
-import { Award, Briefcase, MapPin, Target, CheckCircle2, AlertTriangle, FileCheck, Star } from 'lucide-react';
+const MEDALS = { 1: '🥇', 2: '🥈', 3: '🥉' };
+const RANK_CLASS = { 1: 'rank-1', 2: 'rank-2', 3: 'rank-3' };
+const BADGE_CLASS = { 1: 'r1', 2: 'r2', 3: 'r3' };
 
-export const CandidateCard = ({ candidate, rank }) => {
-  const isFirst = rank === 1;
+export default function CandidateCard({ candidate, rank }) {
+  const medal = MEDALS[rank] || '';
+  const jabatanShort =
+    candidate.jabatan.length > 38
+      ? candidate.jabatan.slice(0, 38) + '…'
+      : candidate.jabatan;
 
   return (
-    <div className={`candidate-card ${isFirst ? 'candidate-card-first' : ''}`}>
-      <div className="card-header">
-        <div className="rank-badge">
-          {isFirst ? <Award size={20} className="icon-gold" /> : `#${rank}`}
-        </div>
-        <div className="candidate-info">
-          <h3 className="candidate-name">{candidate.name}</h3>
-          <p className="candidate-nip">NIP: {candidate.nip}</p>
-        </div>
-      </div>
-      
-      <div className="card-body">
-        <div className="info-row">
-          <Briefcase size={16} className="info-icon" />
-          <span className="info-text" title={candidate.jabatan}>{candidate.jabatan}</span>
-        </div>
-        <div className="info-row">
-          <MapPin size={16} className="info-icon" />
-          <span className="info-text" title={candidate.unitKerja}>{candidate.unitKerja}</span>
-        </div>
-        
-        <div className="stats-grid">
-          <div className="stat-box stat-positive">
-            <div className="stat-icon-wrapper"><CheckCircle2 size={14}/></div>
-            <div className="stat-content">
-              <span className="stat-label">Kehadiran</span>
-              <span className="stat-value">{candidate.kehadiran} <span className="stat-unit">hari</span></span>
-            </div>
-          </div>
-          
-          <div className="stat-box stat-negative">
-            <div className="stat-icon-wrapper"><AlertTriangle size={14}/></div>
-            <div className="stat-content">
-              <span className="stat-label">Penalti</span>
-              <span className="stat-value">{candidate.totalPenalty} <span className="stat-unit">poin</span></span>
-            </div>
-          </div>
-          
-          <div className="stat-box stat-neutral">
-            <div className="stat-icon-wrapper"><FileCheck size={14}/></div>
-            <div className="stat-content">
-              <span className="stat-label">Evidence</span>
-              <span className="stat-value">{candidate.evidence}</span>
-            </div>
-          </div>
+    <div className={`cand-card ${RANK_CLASS[rank] || ''}`}>
+      {/* Rank badge */}
+      <span className={`rank-badge ${BADGE_CLASS[rank] || ''}`}>
+        {medal} #{rank}
+      </span>
 
-          <div className="stat-box stat-primary">
-            <div className="stat-icon-wrapper"><Star size={14}/></div>
-            <div className="stat-content">
-              <span className="stat-label">SKP</span>
-              <span className="stat-value">{candidate.skp}</span>
-            </div>
+      {/* Identity */}
+      <span className="card-medal">{medal}</span>
+      <div className="card-name">{candidate.name}</div>
+      <div className="card-nip">NIP: {candidate.nip}</div>
+      <div className="card-jabatan-tag">{jabatanShort}</div>
+      <div className="card-unit">{candidate.unitKerja}</div>
+
+      {/* Stats */}
+      <div className="stat-grid">
+        <div className="stat-chip">
+          <div className="stat-lbl">✅ Evidence</div>
+          <div className="stat-val val-blue">{candidate.evidence}</div>
+        </div>
+        <div className="stat-chip">
+          <div className="stat-lbl">⚠️ Penalti</div>
+          <div className="stat-val val-red">
+            {candidate.totalPenalty.toFixed(0)}
+            <span className="stat-unit"> poin</span>
           </div>
+        </div>
+        <div className="stat-chip">
+          <div className="stat-lbl">📅 Kehadiran</div>
+          <div className="stat-val val-green">
+            {candidate.kehadiran.toFixed(0)}
+            <span className="stat-unit"> hari</span>
+          </div>
+        </div>
+        <div className="stat-chip">
+          <div className="stat-lbl">⭐ SKP</div>
+          <div className="stat-val val-gold">{candidate.skp}</div>
         </div>
       </div>
     </div>
   );
-};
+}
