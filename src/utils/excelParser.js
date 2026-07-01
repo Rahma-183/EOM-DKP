@@ -39,10 +39,21 @@ export const parseExcel = async (file, _unused, blacklistStr) => {
     const nipStr = row[2] ? String(row[2]).trim().toLowerCase() : '';
     if (blacklist.includes(name.toLowerCase()) || (nipStr && blacklist.includes(nipStr))) continue;
 
-    // Jumlahkan semua kolom penalti (kolom 9–22, 0-based)
+    // Pisahkan DL/Ijin/Cuti (kolom 9) dan Penalti (kolom 10-22)
+    const dlIjinCuti = parseFloat(row[9]) || 0;
     let totalPenalty = 0;
-    for (let i = 9; i <= 22; i++) {
+    for (let i = 10; i <= 22; i++) {
       totalPenalty += parseFloat(row[i]) || 0;
+    }
+
+    // Tentukan Presensi Tier (1 = Terbaik, 3 = Terburuk)
+    let presensiTier = 3;
+    if (totalPenalty === 0) {
+      if (dlIjinCuti === 0) {
+        presensiTier = 1; // Tidak ada pinalti, tidak ada DL/Ijin/Cuti
+      } else {
+        presensiTier = 2; // Tidak ada pinalti, tapi ada DL/Ijin/Cuti
+      }
     }
 
     parsed.push({
@@ -52,7 +63,9 @@ export const parseExcel = async (file, _unused, blacklistStr) => {
       unitKerja : row[5]  ? String(row[5]).trim()  : '-',
       category  : row[6]  ? String(row[6]).trim()  : 'Tanpa Kategori',
       kehadiran : parseFloat(row[8])  || 0,
+      dlIjinCuti,
       totalPenalty,
+      presensiTier,
       evidence  : parseFloat(row[23]) || 0,
       skp       : parseFloat(row[24]) || 0,
     });
@@ -71,14 +84,16 @@ export const parseExcel = async (file, _unused, blacklistStr) => {
 
   // 5. Sort & ambil Top 6 per kategori
   //    Urutan prioritas:
-  //      1. Evidence    — DESC (tertinggi)
-  //      2. TotalPenalti — ASC  (terendah)
-  //      3. Kehadiran   — DESC (terbanyak)
-  //      4. SKP         — DESC (tertinggi)
+  //      1. Evidence      — DESC (tertinggi)
+  //      2. Presensi Tier — ASC  (1 lebih baik dari 2, dst)
+  //      3. TotalPenalti  — ASC  (terendah)
+  //      4. Kehadiran     — DESC (terbanyak)
+  //      5. SKP           — DESC (tertinggi)
   const results = {};
   for (const cat in grouped) {
     grouped[cat].sort((a, b) => {
       if (b.evidence      !== a.evidence)      return b.evidence - a.evidence;
+      if (a.presensiTier  !== b.presensiTier)  return a.presensiTier - b.presensiTier;
       if (a.totalPenalty  !== b.totalPenalty)  return a.totalPenalty - b.totalPenalty;
       if (b.kehadiran     !== a.kehadiran)     return b.kehadiran - a.kehadiran;
       return b.skp - a.skp;
