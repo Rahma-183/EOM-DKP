@@ -45,10 +45,12 @@ Kandidat diseleksi menggunakan metode **Multi-Criteria Hierarchical Sorting**:
 
 | Prioritas | Kriteria | Arah |
 |-----------|----------|------|
-| 1 | Evidence Score | Tertinggi |
-| 2 | Total Penalti (Rekap Presensi) | Terendah |
-| 3 | Kehadiran (hari) | Terbanyak |
+| 1 | Total Penalti (Tidak Absen Datang s/d Tidak Masuk Tanpa Keterangan) | Terendah |
+| 2 | Evidence Score | Tertinggi |
+| 3 | DL/Ijin/Cuti | Terendah |
 | 4 | Nilai SKP | Tertinggi |
+| 5 | Kehadiran (hari) | Terbanyak |
+| 6 | Durasi Dihitung | Tertinggi |
 
 ## Catatan Format File Excel
 
@@ -61,10 +63,12 @@ File rekap usulan harus memiliki struktur dengan **4 baris header** di atas, seh
 | E | Jabatan |
 | F | Unit Kerja |
 | G | Kategori |
-| I | Kehadiran |
-| J–W | Komponen Penalti |
+| I | Kehadiran (hari) |
+| J | DL/Ijin/Cuti |
+| K–W | Komponen Penalti (Tidak Absen Datang s/d Tidak Masuk Tanpa Keterangan) |
 | X | Evidence Score |
-| Y | Nilai SKP |
+| Y | Total Nilai Predikat SKP |
+| Z | Durasi Dihitung |
 
 Baris kosong, baris subtotal, atau kolom di luar jangkauan di atas akan diabaikan secara otomatis oleh sistem.
 

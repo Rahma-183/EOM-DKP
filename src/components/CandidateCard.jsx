@@ -7,8 +7,6 @@ export default function CandidateCard({ candidate, rank, isPodium }) {
       ? candidate.jabatan.slice(0, 38) + '…'
       : candidate.jabatan;
 
-  const isRec = rank > 3;
-
   return (
     <div className={`cand-card ${isPodium ? RANK_CLASS[rank] || '' : 'rec-card'}`}>
       {/* Rank badge */}
@@ -22,29 +20,34 @@ export default function CandidateCard({ candidate, rank, isPodium }) {
       <div className="card-jabatan-tag">{jabatanShort}</div>
       <div className="card-unit">{candidate.unitKerja}</div>
 
-      {/* Stats */}
-      <div className="stat-grid">
+      {/* Stats — 5 metrics */}
+      <div className="stat-grid-5">
+        <div className="stat-chip">
+          <div className="stat-lbl">Penalti</div>
+          <div className="stat-val val-red">
+            {candidate.totalPenalty.toFixed(0)}
+          </div>
+        </div>
         <div className="stat-chip">
           <div className="stat-lbl">Evidence</div>
           <div className="stat-val val-blue">{candidate.evidence}</div>
         </div>
         <div className="stat-chip">
-          <div className="stat-lbl">Penalti</div>
-          <div className="stat-val val-red">
-            {candidate.totalPenalty.toFixed(0)}
-            <span className="stat-unit"> poin</span>
-          </div>
-        </div>
-        <div className="stat-chip">
-          <div className="stat-lbl">Kehadiran</div>
-          <div className="stat-val val-green">
-            {candidate.kehadiran.toFixed(0)}
-            <span className="stat-unit"> hari</span>
+          <div className="stat-lbl">DL/Ijin/Cuti</div>
+          <div className="stat-val val-gold">
+            {candidate.dlIjinCuti.toFixed(0)}
           </div>
         </div>
         <div className="stat-chip">
           <div className="stat-lbl">SKP</div>
-          <div className="stat-val val-gold">{candidate.skp}</div>
+          <div className="stat-val val-green">{candidate.skp}</div>
+        </div>
+        <div className="stat-chip">
+          <div className="stat-lbl">Kehadiran</div>
+          <div className="stat-val val-blue">
+            {candidate.kehadiran.toFixed(0)}
+            <span className="stat-unit"> hari</span>
+          </div>
         </div>
       </div>
     </div>

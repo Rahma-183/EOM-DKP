@@ -758,6 +758,12 @@ html, body, #root {
   gap: 8px;
 }
 
+.stat-grid-5 {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 6px;
+}
+
 .stat-chip {
   background: rgba(0,0,0,0.2);
   border: 1px solid var(--border-soft);

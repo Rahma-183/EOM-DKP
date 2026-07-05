@@ -27,6 +27,20 @@ export const parseExcel = async (file, _unused, blacklistStr) => {
   }
 
   // 3. Parse baris data (mulai index 4, lewati 4 baris header)
+  //    Peta kolom (0-based):
+  //      1  = Nama
+  //      2  = NIP
+  //      4  = Jabatan
+  //      5  = Unit Kerja
+  //      6  = Kategori
+  //      8  = Kehadiran (hari)
+  //      9  = DL/Ijin/Cuti
+  //      10 = Tidak Absen Datang
+  //      ...
+  //      22 = Tidak Masuk Tanpa Keterangan
+  //      23 = Evidence
+  //      24 = Total Nilai Predikat SKP
+  //      25 = Durasi Dihitung
   const parsed = [];
   for (const row of raw.slice(4)) {
     const nameRaw = row[1];
@@ -39,35 +53,27 @@ export const parseExcel = async (file, _unused, blacklistStr) => {
     const nipStr = row[2] ? String(row[2]).trim().toLowerCase() : '';
     if (blacklist.includes(name.toLowerCase()) || (nipStr && blacklist.includes(nipStr))) continue;
 
-    // Pisahkan DL/Ijin/Cuti (kolom 9) dan Penalti (kolom 10-22)
+    // DL/Ijin/Cuti (kolom 9)
     const dlIjinCuti = parseFloat(row[9]) || 0;
+
+    // Pinalti: jumlah kolom 10 ("Tidak Absen Datang") sampai 22 ("Tidak Masuk Tanpa Keterangan")
     let totalPenalty = 0;
     for (let i = 10; i <= 22; i++) {
       totalPenalty += parseFloat(row[i]) || 0;
     }
 
-    // Tentukan Presensi Tier (1 = Terbaik, 3 = Terburuk)
-    let presensiTier = 3;
-    if (totalPenalty === 0) {
-      if (dlIjinCuti === 0) {
-        presensiTier = 1; // Tidak ada pinalti, tidak ada DL/Ijin/Cuti
-      } else {
-        presensiTier = 2; // Tidak ada pinalti, tapi ada DL/Ijin/Cuti
-      }
-    }
-
     parsed.push({
       name,
-      nip       : row[2]  ? String(row[2]).trim()  : '-',
-      jabatan   : row[4]  ? String(row[4]).trim()  : '-',
-      unitKerja : row[5]  ? String(row[5]).trim()  : '-',
-      category  : row[6]  ? String(row[6]).trim()  : 'Tanpa Kategori',
-      kehadiran : parseFloat(row[8])  || 0,
+      nip           : row[2]  ? String(row[2]).trim()  : '-',
+      jabatan       : row[4]  ? String(row[4]).trim()  : '-',
+      unitKerja     : row[5]  ? String(row[5]).trim()  : '-',
+      category      : row[6]  ? String(row[6]).trim()  : 'Tanpa Kategori',
+      kehadiran     : parseFloat(row[8])  || 0,
       dlIjinCuti,
       totalPenalty,
-      presensiTier,
-      evidence  : parseFloat(row[23]) || 0,
-      skp       : parseFloat(row[24]) || 0,
+      evidence      : parseFloat(row[23]) || 0,
+      skp           : parseFloat(row[24]) || 0,
+      durasiDihitung: parseFloat(row[25]) || 0,
     });
   }
 
@@ -83,20 +89,22 @@ export const parseExcel = async (file, _unused, blacklistStr) => {
   }
 
   // 5. Sort & ambil Top 6 per kategori
-  //    Urutan prioritas:
-  //      1. Evidence      — DESC (tertinggi)
-  //      2. Presensi Tier — ASC  (1 lebih baik dari 2, dst)
-  //      3. TotalPenalti  — ASC  (terendah)
-  //      4. Kehadiran     — DESC (terbanyak)
-  //      5. SKP           — DESC (tertinggi)
+  //    Urutan prioritas eliminasi:
+  //      1. TotalPenalti    — ASC  (paling sedikit = terbaik)
+  //      2. Evidence        — DESC (terbesar = terbaik)
+  //      3. DL/Ijin/Cuti   — ASC  (paling sedikit = terbaik)
+  //      4. SKP            — DESC (tertinggi = terbaik)
+  //      5. Kehadiran      — DESC (terbanyak = terbaik)
+  //      6. Durasi Dihitung — DESC (terbesar = terbaik, tiebreaker terakhir)
   const results = {};
   for (const cat in grouped) {
     grouped[cat].sort((a, b) => {
-      if (b.evidence      !== a.evidence)      return b.evidence - a.evidence;
-      if (a.presensiTier  !== b.presensiTier)  return a.presensiTier - b.presensiTier;
-      if (a.totalPenalty  !== b.totalPenalty)  return a.totalPenalty - b.totalPenalty;
-      if (b.kehadiran     !== a.kehadiran)     return b.kehadiran - a.kehadiran;
-      return b.skp - a.skp;
+      if (a.totalPenalty    !== b.totalPenalty)    return a.totalPenalty - b.totalPenalty;
+      if (b.evidence        !== a.evidence)        return b.evidence - a.evidence;
+      if (a.dlIjinCuti      !== b.dlIjinCuti)      return a.dlIjinCuti - b.dlIjinCuti;
+      if (b.skp             !== a.skp)             return b.skp - a.skp;
+      if (b.kehadiran       !== a.kehadiran)       return b.kehadiran - a.kehadiran;
+      return b.durasiDihitung - a.durasiDihitung;
     });
     results[cat] = grouped[cat].slice(0, 6); // Ambil Top 6
   }
@@ -110,16 +118,18 @@ export const exportToExcel = (results) => {
   for (const category in results) {
     results[category].forEach((c, i) => {
       rows.push({
-        Kategori         : category,
-        Peringkat        : i + 1,
-        Nama             : c.name,
-        NIP              : c.nip,
-        Jabatan          : c.jabatan,
-        'Unit Kerja'     : c.unitKerja,
-        Evidence         : c.evidence,
-        'Total Penalti'  : c.totalPenalty,
-        'Kehadiran (hari)': c.kehadiran,
-        'Nilai SKP'      : c.skp,
+        Kategori           : category,
+        Peringkat          : i + 1,
+        Nama               : c.name,
+        NIP                : c.nip,
+        Jabatan            : c.jabatan,
+        'Unit Kerja'       : c.unitKerja,
+        'Total Penalti'    : c.totalPenalty,
+        Evidence           : c.evidence,
+        'DL/Ijin/Cuti'     : c.dlIjinCuti,
+        'Nilai SKP'        : c.skp,
+        'Kehadiran (hari)' : c.kehadiran,
+        'Durasi Dihitung'  : c.durasiDihitung,
       });
     });
   }
