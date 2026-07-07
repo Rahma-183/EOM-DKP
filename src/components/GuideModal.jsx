@@ -22,6 +22,19 @@ export default function GuideModal({ isOpen, onClose }) {
           </div>
 
           <div className="guide-section">
+            <h3>Logika Seleksi & Eliminasi (Otomatis):</h3>
+            <p className="guide-desc">
+              Sistem akan memproses Top 6 secara hierarkis (bertingkat) dari yang paling penting. Jika poin 1 sama, baru sistem melihat poin 2, dan seterusnya:
+            </p>
+            <ol className="blacklist-rules">
+              <li><strong>Penalti Terendah (Prioritas 1)</strong> — Kandidat dengan pelanggaran paling sedikit akan langsung dimenangkan.</li>
+              <li><strong>Evidence Tertinggi</strong> — Jika ada kandidat dengan penalti yang sama (misal sama-sama 0), sistem memilih yang nilai Evidence-nya paling besar.</li>
+              <li><strong>DL/Ijin/Cuti Terendah</strong> — Jika evidence juga bernilai sama, kandidat yang lebih jarang DL/Ijin/Cuti akan dipilih.</li>
+              <li><strong>Tiebreaker (Pemecah Seri)</strong> — Apabila kriteria di atas semua bernilai sama (seri mutlak), sistem akan otomatis mengurutkan berdasarkan <strong>Nilai SKP</strong> (tertinggi), disusul <strong>Jumlah Kehadiran</strong> (terbanyak), dan terakhir <strong>Durasi Dihitung</strong>.</li>
+            </ol>
+          </div>
+
+          <div className="guide-section">
             <h3>Ketentuan Daftar Blacklist:</h3>
             <p className="guide-desc">
               Kandidat yang masuk dalam salah satu kriteria berikut <strong>wajib</strong> dimasukkan ke dalam kotak Blacklist agar tidak terpilih menjadi EOM:
