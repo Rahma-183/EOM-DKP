@@ -41,25 +41,16 @@ Kandidat berikut wajib dimasukkan ke daftar pengecualian:
 
 ## Algoritma Seleksi
 
-Kandidat diseleksi menggunakan metode **Composite Scoring + Hierarchical Tiebreaker**:
+Kandidat diseleksi menggunakan metode **Multi-Criteria Hierarchical Sorting**:
 
-### Skor Utama (50% Evidence + 50% Presensi)
-Semua komponen dinormalisasi (min-max) per kategori agar skalanya setara.
-
-```
-Skor Presensi = 60% × (1 - Penalti)      ← lebih berdampak
-              + 40% × (1 - DL/Ijin/Cuti)
-
-Skor Akhir    = 50% × Evidence
-              + 50% × Skor Presensi
-```
-
-### Tiebreaker (jika Skor Komposit sama)
-| Prioritas | Kriteria | Arah |
-|-----------|----------|------|
-| 1 | Kehadiran (hari) | Terbanyak |
-| 2 | Nilai SKP | Tertinggi |
-| 3 | Durasi Dihitung | Tertinggi |
+| Prioritas | Kriteria | Arah | Keterangan |
+|-----------|----------|------|------------|
+| 1 | Total Penalti | Terendah | Jumlah kolom "Tidak Absen Datang" s/d "Tidak Masuk Tanpa Keterangan" |
+| 2 | Evidence | Tertinggi | Kelengkapan bukti kinerja |
+| 3 | DL/Ijin/Cuti | Terendah | Dinas Luar / Ijin / Cuti |
+| 4 | Nilai SKP | Tertinggi | Tiebreaker |
+| 5 | Kehadiran (hari) | Terbanyak | Tiebreaker |
+| 6 | Durasi Dihitung | Tertinggi | Tiebreaker terakhir |
 
 ## Catatan Format File Excel
 

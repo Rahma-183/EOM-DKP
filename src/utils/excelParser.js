@@ -89,53 +89,25 @@ export const parseExcel = async (file, _unused, blacklistStr) => {
   }
 
   // 5. Sort & ambil Top 6 per kategori
-  //    Skor Komposit = 50% Evidence + 50% Presensi
-  //
-  //    Komponen Presensi:
-  //      - 60% Penalti       (rendah = baik)  ← lebih berdampak
-  //      - 40% DL/Ijin/Cuti  (rendah = baik)
-  //
-  //    Tiebreaker: Kehadiran → SKP → Durasi Dihitung
+  //    Urutan prioritas (hierarkis):
+  //      1. Penalti        — ASC  (paling sedikit = terbaik)
+  //      2. Evidence       — DESC (terbesar = terbaik)
+  //      3. DL/Ijin/Cuti  — ASC  (paling sedikit = terbaik)
+  //    Tiebreaker:
+  //      4. SKP            — DESC (tertinggi = terbaik)
+  //      5. Kehadiran      — DESC (terbanyak = terbaik)
+  //      6. Durasi Dihitung — DESC (terbesar = terbaik)
   const results = {};
   for (const cat in grouped) {
-    const arr = grouped[cat];
-
-    // Hitung min/max per kategori untuk normalisasi
-    let minP = Infinity, maxP = -Infinity;
-    let minE = Infinity, maxE = -Infinity;
-    let minD = Infinity, maxD = -Infinity;
-    for (const c of arr) {
-      if (c.totalPenalty < minP) minP = c.totalPenalty;
-      if (c.totalPenalty > maxP) maxP = c.totalPenalty;
-      if (c.evidence    < minE) minE = c.evidence;
-      if (c.evidence    > maxE) maxE = c.evidence;
-      if (c.dlIjinCuti  < minD) minD = c.dlIjinCuti;
-      if (c.dlIjinCuti  > maxD) maxD = c.dlIjinCuti;
-    }
-    const rangeP = maxP - minP || 1;
-    const rangeE = maxE - minE || 1;
-    const rangeD = maxD - minD || 1;
-
-    // Hitung skor komposit untuk setiap kandidat
-    for (const c of arr) {
-      const normEvidence = (c.evidence    - minE) / rangeE;  // 0..1 (tinggi = baik)
-      const normPenalty  = (c.totalPenalty - minP) / rangeP;  // 0..1 (rendah = baik)
-      const normDL       = (c.dlIjinCuti  - minD) / rangeD;  // 0..1 (rendah = baik)
-
-      // Skor Presensi = 60% (1-penalti) + 40% (1-DL)
-      const presensiScore = 0.6 * (1 - normPenalty) + 0.4 * (1 - normDL);
-
-      // Skor Akhir = 50% Evidence + 50% Presensi
-      c.compositeScore = 0.5 * normEvidence + 0.5 * presensiScore;
-    }
-
-    arr.sort((a, b) => {
-      if (b.compositeScore !== a.compositeScore) return b.compositeScore - a.compositeScore;
-      if (b.kehadiran      !== a.kehadiran)      return b.kehadiran - a.kehadiran;
-      if (b.skp            !== a.skp)            return b.skp - a.skp;
+    grouped[cat].sort((a, b) => {
+      if (a.totalPenalty !== b.totalPenalty) return a.totalPenalty - b.totalPenalty;
+      if (b.evidence    !== a.evidence)     return b.evidence - a.evidence;
+      if (a.dlIjinCuti  !== b.dlIjinCuti)   return a.dlIjinCuti - b.dlIjinCuti;
+      if (b.skp         !== a.skp)          return b.skp - a.skp;
+      if (b.kehadiran   !== a.kehadiran)    return b.kehadiran - a.kehadiran;
       return b.durasiDihitung - a.durasiDihitung;
     });
-    results[cat] = arr.slice(0, 6); // Ambil Top 6
+    results[cat] = grouped[cat].slice(0, 6); // Ambil Top 6
   }
 
   return results;
