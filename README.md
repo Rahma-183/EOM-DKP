@@ -43,23 +43,25 @@ Kandidat berikut wajib dimasukkan ke daftar pengecualian:
 
 Kandidat diseleksi menggunakan metode **Composite Scoring + Hierarchical Tiebreaker**:
 
-### Skor Utama (Bobot 50:50)
-Penalti dan Evidence dinormalisasi (min-max) per kategori, lalu digabung menjadi skor komposit:
+### Skor Utama (50% Evidence + 50% Presensi)
+Semua komponen dinormalisasi (min-max) per kategori agar skalanya setara.
 
 ```
-Skor = 50% × Evidence (dinormalisasi, tinggi = baik)
-     + 50% × Penalti  (dinormalisasi, rendah = baik)
+Skor Presensi = 50% × (1 - Penalti)     ← paling berdampak
+              + 30% × (1 - DL/Ijin/Cuti)
+              + 20% × Kehadiran
+
+Skor Akhir    = 50% × Evidence
+              + 50% × Skor Presensi
 ```
 
-Contoh: Kandidat dengan penalti = 0 tapi evidence = 0 akan **kalah** dari kandidat dengan penalti = 1 tapi evidence = 3, karena kontribusi evidence-nya jauh lebih besar.
+Contoh: Kandidat dengan penalti = 0, DL = 0, kehadiran tinggi, tapi evidence = 0 akan **kalah** dari kandidat yang punya sedikit penalti tapi evidence-nya jauh lebih besar, karena proporsinya seimbang 50:50.
 
 ### Tiebreaker (jika Skor Komposit sama)
 | Prioritas | Kriteria | Arah |
 |-----------|----------|------|
-| 1 | DL/Ijin/Cuti | Terendah |
-| 2 | Nilai SKP | Tertinggi |
-| 3 | Kehadiran (hari) | Terbanyak |
-| 4 | Durasi Dihitung | Tertinggi |
+| 1 | Nilai SKP | Tertinggi |
+| 2 | Durasi Dihitung | Tertinggi |
 
 ## Catatan Format File Excel
 
