@@ -47,21 +47,19 @@ Kandidat diseleksi menggunakan metode **Composite Scoring + Hierarchical Tiebrea
 Semua komponen dinormalisasi (min-max) per kategori agar skalanya setara.
 
 ```
-Skor Presensi = 50% × (1 - Penalti)     ← paling berdampak
-              + 30% × (1 - DL/Ijin/Cuti)
-              + 20% × Kehadiran
+Skor Presensi = 60% × (1 - Penalti)      ← lebih berdampak
+              + 40% × (1 - DL/Ijin/Cuti)
 
 Skor Akhir    = 50% × Evidence
               + 50% × Skor Presensi
 ```
 
-Contoh: Kandidat dengan penalti = 0, DL = 0, kehadiran tinggi, tapi evidence = 0 akan **kalah** dari kandidat yang punya sedikit penalti tapi evidence-nya jauh lebih besar, karena proporsinya seimbang 50:50.
-
 ### Tiebreaker (jika Skor Komposit sama)
 | Prioritas | Kriteria | Arah |
 |-----------|----------|------|
-| 1 | Nilai SKP | Tertinggi |
-| 2 | Durasi Dihitung | Tertinggi |
+| 1 | Kehadiran (hari) | Terbanyak |
+| 2 | Nilai SKP | Tertinggi |
+| 3 | Durasi Dihitung | Tertinggi |
 
 ## Catatan Format File Excel
 

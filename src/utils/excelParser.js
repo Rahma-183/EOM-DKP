@@ -91,12 +91,11 @@ export const parseExcel = async (file, _unused, blacklistStr) => {
   // 5. Sort & ambil Top 6 per kategori
   //    Skor Komposit = 50% Evidence + 50% Presensi
   //
-  //    Komponen Presensi (berdasarkan rules tier sebelumnya):
-  //      - 50% Penalti       (rendah = baik)  ← paling berdampak
-  //      - 30% DL/Ijin/Cuti  (rendah = baik)
-  //      - 20% Kehadiran     (tinggi = baik)
+  //    Komponen Presensi:
+  //      - 60% Penalti       (rendah = baik)  ← lebih berdampak
+  //      - 40% DL/Ijin/Cuti  (rendah = baik)
   //
-  //    Tiebreaker: SKP → Durasi Dihitung
+  //    Tiebreaker: Kehadiran → SKP → Durasi Dihitung
   const results = {};
   for (const cat in grouped) {
     const arr = grouped[cat];
@@ -105,7 +104,6 @@ export const parseExcel = async (file, _unused, blacklistStr) => {
     let minP = Infinity, maxP = -Infinity;
     let minE = Infinity, maxE = -Infinity;
     let minD = Infinity, maxD = -Infinity;
-    let minK = Infinity, maxK = -Infinity;
     for (const c of arr) {
       if (c.totalPenalty < minP) minP = c.totalPenalty;
       if (c.totalPenalty > maxP) maxP = c.totalPenalty;
@@ -113,23 +111,19 @@ export const parseExcel = async (file, _unused, blacklistStr) => {
       if (c.evidence    > maxE) maxE = c.evidence;
       if (c.dlIjinCuti  < minD) minD = c.dlIjinCuti;
       if (c.dlIjinCuti  > maxD) maxD = c.dlIjinCuti;
-      if (c.kehadiran   < minK) minK = c.kehadiran;
-      if (c.kehadiran   > maxK) maxK = c.kehadiran;
     }
     const rangeP = maxP - minP || 1;
     const rangeE = maxE - minE || 1;
     const rangeD = maxD - minD || 1;
-    const rangeK = maxK - minK || 1;
 
     // Hitung skor komposit untuk setiap kandidat
     for (const c of arr) {
-      const normEvidence  = (c.evidence    - minE) / rangeE;  // 0..1 (tinggi = baik)
-      const normPenalty   = (c.totalPenalty - minP) / rangeP;  // 0..1 (rendah = baik)
-      const normDL        = (c.dlIjinCuti  - minD) / rangeD;  // 0..1 (rendah = baik)
-      const normKehadiran = (c.kehadiran   - minK) / rangeK;  // 0..1 (tinggi = baik)
+      const normEvidence = (c.evidence    - minE) / rangeE;  // 0..1 (tinggi = baik)
+      const normPenalty  = (c.totalPenalty - minP) / rangeP;  // 0..1 (rendah = baik)
+      const normDL       = (c.dlIjinCuti  - minD) / rangeD;  // 0..1 (rendah = baik)
 
-      // Skor Presensi = 50% (1-penalti) + 30% (1-DL) + 20% kehadiran
-      const presensiScore = 0.5 * (1 - normPenalty) + 0.3 * (1 - normDL) + 0.2 * normKehadiran;
+      // Skor Presensi = 60% (1-penalti) + 40% (1-DL)
+      const presensiScore = 0.6 * (1 - normPenalty) + 0.4 * (1 - normDL);
 
       // Skor Akhir = 50% Evidence + 50% Presensi
       c.compositeScore = 0.5 * normEvidence + 0.5 * presensiScore;
@@ -137,6 +131,7 @@ export const parseExcel = async (file, _unused, blacklistStr) => {
 
     arr.sort((a, b) => {
       if (b.compositeScore !== a.compositeScore) return b.compositeScore - a.compositeScore;
+      if (b.kehadiran      !== a.kehadiran)      return b.kehadiran - a.kehadiran;
       if (b.skp            !== a.skp)            return b.skp - a.skp;
       return b.durasiDihitung - a.durasiDihitung;
     });
