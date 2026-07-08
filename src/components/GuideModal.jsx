@@ -24,13 +24,18 @@ export default function GuideModal({ isOpen, onClose }) {
           <div className="guide-section">
             <h3>Logika Seleksi & Eliminasi (Otomatis):</h3>
             <p className="guide-desc">
-              Sistem akan memproses Top 6 secara hierarkis (bertingkat) dari yang paling penting. Jika poin 1 sama, baru sistem melihat poin 2, dan seterusnya:
+              Sistem memproses kandidat Top 6 dengan sistem perhitungan Skor Komposit (nilai tiap kategori dinormalisasi ke skala 0-1 agar seimbang). Rumusnya adalah:
+            </p>
+            <ul className="blacklist-rules">
+              <li><strong>Skor Akhir</strong> = <code>50% (Evidence) - 25% (Total Penalti) - 25% (DL/Ijin/Cuti)</code></li>
+            </ul>
+            <p className="guide-desc">
+              Jika ada beberapa kandidat yang memiliki Skor Akhir sama (seri mutlak), sistem akan otomatis mengurutkannya melalui tahap <em>Tiebreaker</em> berikut secara berurutan:
             </p>
             <ol className="blacklist-rules">
-              <li><strong>Penalti Terendah (Prioritas 1)</strong> — Kandidat dengan pelanggaran paling sedikit akan langsung dimenangkan.</li>
-              <li><strong>Evidence Tertinggi</strong> — Jika ada kandidat dengan penalti yang sama (misal sama-sama 0), sistem memilih yang nilai Evidence-nya paling besar.</li>
-              <li><strong>DL/Ijin/Cuti Terendah</strong> — Jika evidence juga bernilai sama, kandidat yang lebih jarang DL/Ijin/Cuti akan dipilih.</li>
-              <li><strong>Tiebreaker (Pemecah Seri)</strong> — Apabila kriteria di atas semua bernilai sama (seri mutlak), sistem akan otomatis mengurutkan berdasarkan <strong>Nilai SKP</strong> (tertinggi), disusul <strong>Jumlah Kehadiran</strong> (terbanyak), dan terakhir <strong>Durasi Dihitung</strong>.</li>
+              <li><strong>Nilai SKP</strong> (tertinggi menang)</li>
+              <li><strong>Jumlah Kehadiran Hari</strong> (terbanyak menang)</li>
+              <li><strong>Durasi Dihitung</strong> (terlama menang)</li>
             </ol>
           </div>
 

@@ -41,16 +41,19 @@ Kandidat berikut wajib dimasukkan ke daftar pengecualian:
 
 ## Algoritma Seleksi
 
-Kandidat diseleksi menggunakan metode **Multi-Criteria Hierarchical Sorting**:
+Kandidat diseleksi menggunakan metode **Skor Komposit (Persentase)**. Nilai di setiap kategori dinormalisasi terlebih dahulu, lalu dihitung berdasarkan formula berikut:
 
-| Prioritas | Kriteria | Arah | Keterangan |
-|-----------|----------|------|------------|
-| 1 | Total Penalti | Terendah | Jumlah kolom "Tidak Absen Datang" s/d "Tidak Masuk Tanpa Keterangan" |
-| 2 | Evidence | Tertinggi | Kelengkapan bukti kinerja |
-| 3 | DL/Ijin/Cuti | Terendah | Dinas Luar / Ijin / Cuti |
-| 4 | Nilai SKP | Tertinggi | Tiebreaker |
-| 5 | Kehadiran (hari) | Terbanyak | Tiebreaker |
-| 6 | Durasi Dihitung | Tertinggi | Tiebreaker terakhir |
+```text
+Skor Akhir = 50% (Evidence) - 25% (Total Penalti) - 25% (DL/Ijin/Cuti)
+```
+
+Apabila terdapat kandidat dengan Skor Akhir yang sama (seri), sistem akan menentukan pemenang berdasarkan *tiebreaker* berikut (berurutan):
+
+| Prioritas | Kriteria | Arah |
+|-----------|----------|------|
+| 1 | Nilai SKP | Tertinggi |
+| 2 | Kehadiran (hari) | Terbanyak |
+| 3 | Durasi Dihitung | Tertinggi |
 
 ## Catatan Format File Excel
 

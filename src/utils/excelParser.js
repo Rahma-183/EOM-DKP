@@ -89,25 +89,52 @@ export const parseExcel = async (file, _unused, blacklistStr) => {
   }
 
   // 5. Sort & ambil Top 6 per kategori
-  //    Urutan prioritas (hierarkis):
-  //      1. Penalti        — ASC  (paling sedikit = terbaik)
-  //      2. Evidence       — DESC (terbesar = terbaik)
-  //      3. DL/Ijin/Cuti  — ASC  (paling sedikit = terbaik)
-  //    Tiebreaker:
-  //      4. SKP            — DESC (tertinggi = terbaik)
-  //      5. Kehadiran      — DESC (terbanyak = terbaik)
-  //      6. Durasi Dihitung — DESC (terbesar = terbaik)
+  //    Perhitungan Skor = 50% (Evidence) - 25% (Penalti) - 25% (DL/Cuti/Ijin)
+  //    Nilai dinormalisasi (0-1) agar bobot persentase seimbang.
+  //    Tiebreaker: SKP -> Kehadiran -> Durasi Dihitung
   const results = {};
   for (const cat in grouped) {
-    grouped[cat].sort((a, b) => {
-      if (a.totalPenalty !== b.totalPenalty) return a.totalPenalty - b.totalPenalty;
-      if (b.evidence    !== a.evidence)     return b.evidence - a.evidence;
-      if (a.dlIjinCuti  !== b.dlIjinCuti)   return a.dlIjinCuti - b.dlIjinCuti;
-      if (b.skp         !== a.skp)          return b.skp - a.skp;
-      if (b.kehadiran   !== a.kehadiran)    return b.kehadiran - a.kehadiran;
+    const arr = grouped[cat];
+
+    // Cari min/max untuk normalisasi
+    let minP = Infinity, maxP = -Infinity;
+    let minE = Infinity, maxE = -Infinity;
+    let minD = Infinity, maxD = -Infinity;
+    
+    for (const c of arr) {
+      if (c.totalPenalty < minP) minP = c.totalPenalty;
+      if (c.totalPenalty > maxP) maxP = c.totalPenalty;
+      if (c.evidence < minE) minE = c.evidence;
+      if (c.evidence > maxE) maxE = c.evidence;
+      if (c.dlIjinCuti < minD) minD = c.dlIjinCuti;
+      if (c.dlIjinCuti > maxD) maxD = c.dlIjinCuti;
+    }
+    
+    const rangeP = maxP - minP || 1;
+    const rangeE = maxE - minE || 1;
+    const rangeD = maxD - minD || 1;
+
+    for (const c of arr) {
+      const normE = (c.evidence - minE) / rangeE;
+      const normP = (c.totalPenalty - minP) / rangeP;
+      const normD = (c.dlIjinCuti - minD) / rangeD;
+
+      // Skor = 50% Evidence - 25% Penalti - 25% DL/Ijin/Cuti
+      c.compositeScore = (0.5 * normE) - (0.25 * normP) - (0.25 * normD);
+    }
+
+    arr.sort((a, b) => {
+      // 1. Skor komposit (tertinggi menang)
+      if (b.compositeScore !== a.compositeScore) return b.compositeScore - a.compositeScore;
+      // 2. Tiebreaker: SKP (tertinggi menang)
+      if (b.skp !== a.skp) return b.skp - a.skp;
+      // 3. Tiebreaker: Kehadiran (terbanyak menang)
+      if (b.kehadiran !== a.kehadiran) return b.kehadiran - a.kehadiran;
+      // 4. Tiebreaker: Durasi Dihitung (terbesar menang)
       return b.durasiDihitung - a.durasiDihitung;
     });
-    results[cat] = grouped[cat].slice(0, 6); // Ambil Top 6
+
+    results[cat] = arr.slice(0, 6); // Ambil Top 6
   }
 
   return results;
