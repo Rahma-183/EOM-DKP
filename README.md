@@ -41,7 +41,7 @@ Kandidat berikut wajib dimasukkan ke daftar pengecualian:
 
 ## Algoritma Seleksi
 
-Kandidat diseleksi menggunakan metode **Skor Komposit (Persentase)**. Nilai di setiap kategori dinormalisasi terlebih dahulu, lalu dihitung berdasarkan formula berikut:
+Kandidat diseleksi menggunakan metode **Skor Komposit (Persentase)** menggunakan nilai asli secara langsung. Rumus perhitungannya adalah:
 
 ```text
 Skor Akhir = 50% (Evidence) - 25% (Total Penalti) - 25% (DL/Ijin/Cuti)

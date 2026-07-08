@@ -90,37 +90,15 @@ export const parseExcel = async (file, _unused, blacklistStr) => {
 
   // 5. Sort & ambil Top 6 per kategori
   //    Perhitungan Skor = 50% (Evidence) - 25% (Penalti) - 25% (DL/Cuti/Ijin)
-  //    Nilai dinormalisasi (0-1) agar bobot persentase seimbang.
+  //    Nilai menggunakan skala asli tanpa normalisasi.
   //    Tiebreaker: SKP -> Kehadiran -> Durasi Dihitung
   const results = {};
   for (const cat in grouped) {
     const arr = grouped[cat];
 
-    // Cari min/max untuk normalisasi
-    let minP = Infinity, maxP = -Infinity;
-    let minE = Infinity, maxE = -Infinity;
-    let minD = Infinity, maxD = -Infinity;
-    
     for (const c of arr) {
-      if (c.totalPenalty < minP) minP = c.totalPenalty;
-      if (c.totalPenalty > maxP) maxP = c.totalPenalty;
-      if (c.evidence < minE) minE = c.evidence;
-      if (c.evidence > maxE) maxE = c.evidence;
-      if (c.dlIjinCuti < minD) minD = c.dlIjinCuti;
-      if (c.dlIjinCuti > maxD) maxD = c.dlIjinCuti;
-    }
-    
-    const rangeP = maxP - minP || 1;
-    const rangeE = maxE - minE || 1;
-    const rangeD = maxD - minD || 1;
-
-    for (const c of arr) {
-      const normE = (c.evidence - minE) / rangeE;
-      const normP = (c.totalPenalty - minP) / rangeP;
-      const normD = (c.dlIjinCuti - minD) / rangeD;
-
       // Skor = 50% Evidence - 25% Penalti - 25% DL/Ijin/Cuti
-      c.compositeScore = (0.5 * normE) - (0.25 * normP) - (0.25 * normD);
+      c.compositeScore = (0.5 * c.evidence) - (0.25 * c.totalPenalty) - (0.25 * c.dlIjinCuti);
     }
 
     arr.sort((a, b) => {
