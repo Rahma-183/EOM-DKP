@@ -89,7 +89,7 @@ export const parseExcel = async (file, _unused, blacklistStr) => {
   }
 
   // 5. Sort & ambil Top 6 per kategori
-  //    Perhitungan Skor = 50% (Evidence) - 25% (Penalti) - 25% (DL/Cuti/Ijin)
+  //    Perhitungan Skor = 50% (Evidence) - 40% (Penalti) - 10% (DL/Cuti/Ijin)
   //    Nilai menggunakan skala asli tanpa normalisasi.
   //    Tiebreaker: SKP -> Kehadiran -> Durasi Dihitung
   const results = {};
@@ -97,8 +97,8 @@ export const parseExcel = async (file, _unused, blacklistStr) => {
     const arr = grouped[cat];
 
     for (const c of arr) {
-      // Skor = 50% Evidence - 25% Penalti - 25% DL/Ijin/Cuti
-      c.compositeScore = (0.5 * c.evidence) - (0.25 * c.totalPenalty) - (0.25 * c.dlIjinCuti);
+      // Skor = 50% Evidence - 40% Penalti - 10% DL/Ijin/Cuti
+      c.compositeScore = (0.5 * c.evidence) - (0.4 * c.totalPenalty) - (0.1 * c.dlIjinCuti);
     }
 
     arr.sort((a, b) => {

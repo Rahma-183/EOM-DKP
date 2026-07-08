@@ -24,10 +24,10 @@ export default function GuideModal({ isOpen, onClose }) {
           <div className="guide-section">
             <h3>Logika Seleksi & Eliminasi (Otomatis):</h3>
             <p className="guide-desc">
-              Sistem memproses kandidat Top 6 dengan sistem perhitungan Skor Komposit (nilai tiap kategori dinormalisasi ke skala 0-1 agar seimbang). Rumusnya adalah:
+              Sistem memproses kandidat Top 6 dengan sistem perhitungan Skor Komposit yang menggunakan nilai mentah (asli). Rumusnya adalah:
             </p>
             <ul className="blacklist-rules">
-              <li><strong>Skor Akhir</strong> = <code>50% (Evidence) - 25% (Total Penalti) - 25% (DL/Ijin/Cuti)</code></li>
+              <li><strong>Skor Akhir</strong> = <code>50% (Evidence) - 40% (Total Penalti) - 10% (DL/Ijin/Cuti)</code></li>
             </ul>
             <p className="guide-desc">
               Jika ada beberapa kandidat yang memiliki Skor Akhir sama (seri mutlak), sistem akan otomatis mengurutkannya melalui tahap <em>Tiebreaker</em> berikut secara berurutan:

@@ -44,7 +44,7 @@ Kandidat berikut wajib dimasukkan ke daftar pengecualian:
 Kandidat diseleksi menggunakan metode **Skor Komposit (Persentase)** menggunakan nilai asli secara langsung. Rumus perhitungannya adalah:
 
 ```text
-Skor Akhir = 50% (Evidence) - 25% (Total Penalti) - 25% (DL/Ijin/Cuti)
+Skor Akhir = 50% (Evidence) - 40% (Total Penalti) - 10% (DL/Ijin/Cuti)
 ```
 
 Apabila terdapat kandidat dengan Skor Akhir yang sama (seri), sistem akan menentukan pemenang berdasarkan *tiebreaker* berikut (berurutan):
